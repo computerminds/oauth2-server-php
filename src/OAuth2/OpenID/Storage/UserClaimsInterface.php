@@ -13,9 +13,13 @@ interface UserClaimsInterface
 
     // fields returned for the claims above
     const PROFILE_CLAIM_VALUES  = 'name family_name given_name middle_name nickname preferred_username profile picture website gender birthdate zoneinfo locale updated_at';
-    const EMAIL_CLAIM_VALUES    = 'email email_verified';
-    const ADDRESS_CLAIM_VALUES  = 'formatted street_address locality region postal_code country';
+    const EMAIL_CLAIM_VALUES    = 'email email_verified';  //[dnc46]
+    //[dnc2]const ADDRESS_CLAIM_VALUES  = 'formatted street_address locality region postal_code country';
+    const ADDRESS_CLAIM_VALUES  = 'address street_address locality region postal_code country';  //[dnc2]
     const PHONE_CLAIM_VALUES    = 'phone_number phone_number_verified';
+    
+    const OPENID_CLAIM_VALUES = self::PROFILE_CLAIM_VALUES . ' ' . self::EMAIL_CLAIM_VALUES . ' ' . self::ADDRESS_CLAIM_VALUES . ' ' . self::PHONE_CLAIM_VALUES;   //[dnc2']
+
 
     /**
      * Return claims about the provided user id.
