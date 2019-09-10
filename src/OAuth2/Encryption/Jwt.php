@@ -196,28 +196,30 @@ class Jwt implements EncryptionInterface
      * Override to create a custom header
      */
     protected function generateJwtHeader($payload, $algorithm)
-    {
-        return array(
-            'typ' => 'JWT',
-            'alg' => $algorithm,
-        );
-    }
+    {   
+        //[dnc6] jwk or jku claims in header
+        if ( JWK_IN_JWT_HEADER AND !is_null(@$payload['kid']) ) {
+            $jh = array(
+                'typ' => 'JWT',
+                'alg' => $algorithm,
+                'kid' => $payload['kid'],
+                'jwk' => OIDC_SERVER_URL . '/jwks/jwks/' . $payload['kid'] . '.json',
+            ); 
+        } else if ( JKU_IN_JWT_HEADER AND !is_null(@$payload['kid']) ) {  
+            $jh = array(
+                'typ' => 'JWT',
+                'alg' => $algorithm,
+                'kid' => $payload['kid'],
+                'jku' => OIDC_SERVER_URL . '/jwks/jwks.json',
+            );
+        } else {
+            $jh = array(
+                'typ' => 'JWT',
+                'alg' => $algorithm,
+            );
 
-    /**
-     * @param string $a
-     * @param string $b
-     * @return bool
-     */
-    protected function hash_equals($a, $b)
-    {
-        if (function_exists('hash_equals')) {
-            return hash_equals($a, $b);
-        }
-        $diff = strlen($a) ^ strlen($b);
-        for ($i = 0; $i < strlen($a) && $i < strlen($b); $i++) {
-            $diff |= ord($a[$i]) ^ ord($b[$i]);
         }
 
-        return $diff === 0;
+        return $jh;
     }
 }
