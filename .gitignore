@@ -4,3 +4,5 @@ vendor
 composer.lock
 .idea
 lisez-moi.txt
+src/OAuth2/OpenID/ResponseType/error_log
+src/OAuth2/GrantType/error_log
