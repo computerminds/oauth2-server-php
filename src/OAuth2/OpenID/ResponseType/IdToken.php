@@ -90,9 +90,13 @@ class IdToken implements IdTokenInterface
      * @return mixed|string
      */
     public function createIdToken($client_id, $userInfo, $nonce = null, $userClaims = null, $access_token = null)
-    {
+    { 
         // pull auth_time from user info if supplied
         list($user_id, $auth_time) = $this->getUserIdAndAuthTime($userInfo);
+        
+        //[dnc4] Calculate kid. Simply the public key hash
+        $public = $this->publicKeyStorage->getPublicKey($client_id);        
+        $kid = md5($public);  // computed on server stored value
 
         $token = array(
             'iss'        => $this->config['issuer'],
@@ -101,6 +105,7 @@ class IdToken implements IdTokenInterface
             'iat'        => time(),
             'exp'        => time() + $this->config['id_lifetime'],
             'auth_time'  => $auth_time,
+            'kid'        => $kid, //[dnc4']
         );
 
         if ($nonce) {
@@ -114,7 +119,26 @@ class IdToken implements IdTokenInterface
         if ($access_token) {
             $token['at_hash'] = $this->createAtHash($access_token, $client_id);
         }
-
+        
+        //[dnc4a] 
+        $acr = ( LOGIN_WITH_TFA )? '2' : '1';
+        $token['acr'] = $acr;
+        
+        //[dnc13'][dnc69] Add extra payload
+        if (isset($this->config['jwt_extra_payload_callable'])) {
+            if (!is_callable($this->config['jwt_extra_payload_callable'])) {
+                throw new \InvalidArgumentException('jwt_extra_payload_callable is not callable');
+            }
+            
+            $extra = call_user_func($this->config['jwt_extra_payload_callable'], $client_id, $user_id, null);
+            
+            if (!is_array($extra)) {
+                throw new \InvalidArgumentException('jwt_extra_payload_callable must return array');
+            }
+            
+            $token = array_merge($extra, $token);
+        }
+        
         return $this->encodeToken($token, $client_id);
     }
 
@@ -133,6 +157,7 @@ class IdToken implements IdTokenInterface
 
         return $this->encryptionUtil->urlSafeB64Encode($at_hash);
     }
+    
 
     /**
      * @param array $token
