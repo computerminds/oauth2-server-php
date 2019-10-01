@@ -1,7 +1,7 @@
 {
     "name": "bdegoy/oauth2-server-php",
-    "description":"OAuth2 Server for PHP",
-    "keywords":["oauth","oauth2","auth"],
+    "description":"Brent Shaffer's OAuth2 Server for PHP. oauthsd branch, long term fork for OAuthSD",
+    "keywords":["oauth","oauth2","auth", "oidc"],
     "type":"library",
     "license":"MIT",
     "authors":[
@@ -11,7 +11,7 @@
             "homepage":"http://brentertainment.com"
         }
     ],
-    "homepage": "http://github.com/bshaffer/oauth2-server-php",
+    "homepage": "http://github.com/bdegoy/oauth2-server-php",
     "autoload": {
         "psr-0": { "OAuth2": "src/" }
     },
