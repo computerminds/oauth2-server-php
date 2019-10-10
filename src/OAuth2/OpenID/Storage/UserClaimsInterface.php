@@ -9,7 +9,7 @@ namespace OAuth2\OpenID\Storage;
 interface UserClaimsInterface
 {
     // valid scope values to pass into the user claims API call
-    const VALID_CLAIMS = 'profile email address phone';
+    const VALID_CLAIMS = 'profile email address phone privileges';   //[dnc19]
 
     // fields returned for the claims above
     const PROFILE_CLAIM_VALUES  = 'name family_name given_name middle_name nickname preferred_username profile picture website gender birthdate zoneinfo locale updated_at';
@@ -17,8 +17,10 @@ interface UserClaimsInterface
     //[dnc2]const ADDRESS_CLAIM_VALUES  = 'formatted street_address locality region postal_code country';
     const ADDRESS_CLAIM_VALUES  = 'address street_address locality region postal_code country';  //[dnc2]
     const PHONE_CLAIM_VALUES    = 'phone_number phone_number_verified';
+    const PRIVILEGES_CLAIM_VALUES = 'scope profil';  //[dnc19]
     
-    const OPENID_CLAIM_VALUES = self::PROFILE_CLAIM_VALUES . ' ' . self::EMAIL_CLAIM_VALUES . ' ' . self::ADDRESS_CLAIM_VALUES . ' ' . self::PHONE_CLAIM_VALUES;   //[dnc2']
+    const OPENID_CLAIM_VALUES = self::PROFILE_CLAIM_VALUES . ' ' . self::EMAIL_CLAIM_VALUES . ' ' . self::ADDRESS_CLAIM_VALUES . ' ' . self::PHONE_CLAIM_VALUES . ' ' . self::PRIVILEGES_CLAIM_VALUES;   //[dnc2']  //[dnc19]
+
 
 
     /**
