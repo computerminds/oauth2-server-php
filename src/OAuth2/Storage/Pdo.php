@@ -363,7 +363,7 @@ OpenIDAuthorizationCodeInterface
             if (in_array($validClaim, $claims)) {
                 if ($validClaim == 'address') {
                     // address is an object with subfields
-                    $userClaims['address'] = $this->getUserClaim($validClaim, $userDetails['address'] ?: $userDetails);
+                    $userClaims['address'] = $this->getUserClaim($validClaim, @$userDetails['address'] ?: $userDetails);
                 } else {
                     $userClaims = array_merge($userClaims, $this->getUserClaim($validClaim, $userDetails));
                 }
