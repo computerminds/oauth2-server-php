@@ -120,10 +120,6 @@ class IdToken implements IdTokenInterface
             $token['at_hash'] = $this->createAtHash($access_token, $client_id);
         }
         
-        //[dnc4a] 
-        $acr = ( LOGIN_WITH_TFA )? '2' : '1';
-        $token['acr'] = $acr;
-        
         //[dnc13'][dnc69] Add extra payload
         if (isset($this->config['jwt_extra_payload_callable'])) {
             if (!is_callable($this->config['jwt_extra_payload_callable'])) {
