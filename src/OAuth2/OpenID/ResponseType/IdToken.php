@@ -128,6 +128,8 @@ class IdToken implements IdTokenInterface
             
             $extra = call_user_func($this->config['jwt_extra_payload_callable'], $client_id, $user_id, null);
             
+            if ( empty($extra['acr']) ) $token['acr'] = 1;  //[dnc91c] we need a default acr value for tests
+            
             if (!is_array($extra)) {
                 throw new \InvalidArgumentException('jwt_extra_payload_callable must return array');
             }
