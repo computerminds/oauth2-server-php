@@ -253,7 +253,7 @@ OpenIDAuthorizationCodeInterface
     * @param string $id_token
     * @return bool|mixed
     */
-    public function setAuthorizationCode($code, $client_id, $userinfo, $redirect_uri, $expires, $scope = null, $id_token = null)
+    public function setAuthorizationCode($code, $client_id, $userinfo, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null) //[pkce']
     {
         $user_id = (is_array($userinfo)? $userinfo['user_id'] : $userinfo);   //[dnc49]
 
@@ -263,7 +263,7 @@ OpenIDAuthorizationCodeInterface
         return call_user_func_array(array($this, 'setAuthorizationCodeWithIdToken'), func_get_args());
         } */ 
         if ( !is_null($id_token) ) {  //[dnc1] 
-            return $this->setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope, $id_token); 
+            return $this->setAuthorizationCodeWithIdToken($code, $client_id, $user_id, $redirect_uri, $expires, $scope, $id_token, $code_challenge, $code_challenge_method);   //[pkce']
         }
 
         // convert expires to datestring
@@ -271,12 +271,12 @@ OpenIDAuthorizationCodeInterface
 
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope where authorization_code=:code', $this->config['code_table']));
+            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, code_challenge=:code_challenge, code_challenge_method=:code_challenge_method where authorization_code=:code', $this->config['code_table']));   //[pkce']
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope)', $this->config['code_table']));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, code_challenge, code_challenge_method) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :code_challenge, :code_challenge_method)', $this->config['code_table']));   //[pkce']
         }
 
-        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope'));
+        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'code_challenge', 'code_challenge_method'));    //[pkce']
     }
 
     /**
@@ -289,7 +289,7 @@ OpenIDAuthorizationCodeInterface
     * @param string $id_token
     * @return bool
     */
-    private function setAuthorizationCodeWithIdToken($code, $client_id, $userinfo, $redirect_uri, $expires, $scope = null, $id_token = null)
+    private function setAuthorizationCodeWithIdToken($code, $client_id, $userinfo, $redirect_uri, $expires, $scope = null, $id_token = null, $code_challenge = null, $code_challenge_method = null) //[pkce']
     {
         $user_id = (is_array($userinfo)? $userinfo['user_id'] : $userinfo);   //[dnc49]
 
@@ -298,12 +298,12 @@ OpenIDAuthorizationCodeInterface
 
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, id_token =:id_token where authorization_code=:code', $this->config['code_table']));
+            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET client_id=:client_id, user_id=:user_id, redirect_uri=:redirect_uri, expires=:expires, scope=:scope, id_token =:id_token, code_challenge=:code_challenge, code_challenge_method=:code_challenge_method where authorization_code=:code', $this->config['code_table']));  //[pkce']
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, id_token) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :id_token)', $this->config['code_table']));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (authorization_code, client_id, user_id, redirect_uri, expires, scope, id_token, code_challenge, code_challenge_method) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope, :id_token, :code_challenge, :code_challenge_method)', $this->config['code_table']));   //[pkce']
         }
 
-        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'id_token'));
+        return $stmt->execute(compact('code', 'client_id', 'user_id', 'redirect_uri', 'expires', 'scope', 'id_token', 'code_challenge', 'code_challenge_method'));  //[pkce']
     }
 
     /**
